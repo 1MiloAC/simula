@@ -61,8 +61,8 @@ pub fn gluon(ecs: &mut ECS, i: usize, pos_a: Coords) -> (f64, f64) {
                 let dist = (gdx.powi(2) + gdy.powi(2)).sqrt();
                 let nx = gdx / dist;
                 let ny = gdy / dist;
-                let force = distance * 0.15;
-                let offset = 2.5;
+                let force = distance * 0.1;
+                let offset = 3.0;
 
                 let new_q = ecs.spawn(
                     Coords {

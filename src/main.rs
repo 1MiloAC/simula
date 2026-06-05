@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     ecs::{Coords, ECS, Velocity},
-    physics::tick,
+    physics::{sd, tick},
 };
 
 pub mod charge;
@@ -52,6 +52,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         None,
     );
     ecs.spawn(
+        Coords { x: 180.0, y: 120.0 },
+        None,
+        Some(50_000_000_000_000.0),
+        None,
+        None,
+        None,
+    );
+    ecs.spawn(
         Coords { x: 200.0, y: 10.0 },
         Some(Velocity { x: -10.0, y: 0.0 }),
         None,
@@ -69,7 +77,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     ecs.spawn(
         Coords { x: 190.0, y: 190.0 },
-        Some(Velocity { x: -1.0, y: -10.0 }),
+        Some(Velocity { x: -1.0, y: -9.0 }),
         None,
         Some(-1.0 / 3.0),
         Some(1.0),
@@ -166,6 +174,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 fn drawline(frame: &mut [u8], x0: i32, x1: i32, y0: i32, y1: i32) {
+    let x1 = x0 + sd(x0 as f64, x1 as f64, 360.0) as i32;
+    let y1 = y0 + sd(y0 as f64, y1 as f64, 360.0) as i32;
+
     let dx = (x1 - x0).abs();
     let sx = if x0 < x1 { 1 } else { -1 };
     let dy = -(y1 - y0).abs();
@@ -175,8 +186,10 @@ fn drawline(frame: &mut [u8], x0: i32, x1: i32, y0: i32, y1: i32) {
     let mut y = y0;
 
     loop {
-        if x >= 0 && x < WIDTH as i32 && y >= 0 && y < HEIGHT as i32 {
-            let idx = ((y * WIDTH as i32) + x) as usize * 4;
+        let screen_x = x.rem_euclid(WIDTH as i32);
+        let screen_y = y.rem_euclid(WIDTH as i32);
+        if screen_x >= 0 && screen_x < WIDTH as i32 && screen_y >= 0 && screen_y < HEIGHT as i32 {
+            let idx = ((screen_y * WIDTH as i32) + screen_x) as usize * 4;
             if idx + 3 < frame.len() {
                 frame[idx] = 128;
                 frame[idx + 1] = 128;
